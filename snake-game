@@ -1,0 +1,86 @@
+/*
+ * execute code on code.org
+ * coded by a cool guy
+ */
+
+
+var unitWidth = 10;
+var speed = 15;
+var unitTime = 1;
+//snake starting colour
+var group = createGroup();
+var sprite = createSprite(200, 200, unitWidth, unitWidth);
+sprite.shapeColor=rgb(0,255,0);
+
+sprite.velocityX = unitWidth;
+createEdgeSprites();
+
+group.add(sprite);
+
+var lastTime = 0;
+
+var gameOver = 0;
+var score = 0;
+
+function draw() {
+  background("black");
+  World.frameRate = speed;
+
+  if (!gameOver) {
+    // if there's a collision with the border or yourself, the game ends
+    if (edges.isTouching(sprite)  ||  group.isTouching(sprite))  {
+      playSound("sound://category_digital/hop.mp3", false);
+      
+      gameOver = 1;
+      sprite.setSpeedAndDirection(0,0);
+    }
+  }
+
+  if (!gameOver) {
+  
+    // every unitTime seconds, makes the snake longer and increase the score
+    if (World.seconds == (lastTime + unitTime)) {
+      lastTime = World.seconds;
+      
+      var s = createSprite(200,200, unitWidth, unitWidth);
+      //s.shapeColor=rgb(randomNumber(100,255),100,100);
+      s.shapeColor=rgb(0,255,0);
+      
+      group.add(s);
+      score ++;
+    }
+    
+    //make each new pixel follow the previous one
+    for (var i = group.length - 1; i > 0; i--) {
+      group.get(i).x = group.get(i-1).x;
+      group.get(i).y = group.get(i-1).y;
+  
+    }
+  
+    //to control the sprite
+    if (keyDown("up")) {
+       sprite.setSpeedAndDirection(unitWidth, -90);
+    }
+    if (keyDown("down")) {
+       sprite.setSpeedAndDirection(unitWidth, 90);
+    }
+    if (keyDown("left")) {
+       sprite.setSpeedAndDirection(unitWidth, 180);
+    }
+    if (keyDown("right")) {
+       sprite.setSpeedAndDirection(unitWidth, 0);
+    }
+  }
+  else {
+    fill("red");
+    textSize(40);
+    text("GAME OVER",80,200);
+    
+  }
+
+  fill("white");
+  textSize(25);
+  text("SCORE:  " +score,10,30);
+    
+  drawSprites();
+}
